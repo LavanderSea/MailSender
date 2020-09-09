@@ -14,5 +14,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MailSenderClient\MailSenderClient.csproj" />
+  </ItemGroup>
+
 
 </Project>
