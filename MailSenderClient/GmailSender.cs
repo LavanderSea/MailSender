@@ -15,12 +15,12 @@ namespace MailSenderClient
 
         public Response Send(string subject, string body, IEnumerable<string> recipients)
         {
-            using var message = new MailMessage();
-            foreach (var recipient in recipients) message.To.Add(new MailAddress(recipient));
-            message.From = new MailAddress(_userName);
-            message.Subject = subject;
-            message.Body = body;
-            message.IsBodyHtml = true;
+            using var mail = new MailMessage();
+            foreach (var recipient in recipients) mail.To.Add(new MailAddress(recipient));
+            mail.From = new MailAddress(_userName);
+            mail.Subject = subject;
+            mail.Body = body;
+            mail.IsBodyHtml = true;
 
             var client = new SmtpClient("smtp.gmail.com")
             {
@@ -31,7 +31,7 @@ namespace MailSenderClient
 
             try
             {
-                client.Send(message);
+                client.Send(mail);
             }
             catch (Exception exception)
             {

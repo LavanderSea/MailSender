@@ -30,10 +30,10 @@ namespace MailSenderAPI
 
             var dbConfiguration = Configuration.GetSection("DbConfiguration");
             var connectionString = GetConfigurationValue("ConnectionString", dbConfiguration);
-            services.AddSingleton<IRepository<Message>>(provider => new SqlRepository(connectionString));
+            services.AddSingleton<IRepository<Mail>>(provider => new SqlRepository(connectionString));
 
             services.AddSingleton<MailSenderService>(provider =>
-                new MailSenderService(provider.GetService<IRepository<Message>>(), provider.GetService<ISender>()));
+                new MailSenderService(provider.GetService<IRepository<Mail>>(), provider.GetService<ISender>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

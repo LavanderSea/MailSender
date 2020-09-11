@@ -6,58 +6,58 @@ using System.Linq;
 
 namespace MailSenderClient.Infrastructure
 {
-    public class SqlRepository : IRepository<Message>
+    public class SqlRepository : IRepository<Mail>
     {
         public SqlRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public void Set(Message message)
+        public void Set(Mail mail)
         {
             var id = Guid.NewGuid();
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
             using var command =
                 new NpgsqlCommand(
-                    "INSERT INTO messages(id, subject, body, result, failed_message) VALUES(@id, @subject, @body, @result, @failed_message);",
+                    "INSERT INTO mails(id, subject, body, result, failed_message) VALUES(@id, @subject, @body, @result, @failed_message);",
                     connection);
             command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("subject", message.Subject);
-            command.Parameters.AddWithValue("body", message.Body);
-            command.Parameters.AddWithValue("result", message.Response.Result);
-            command.Parameters.AddWithValue("failed_message", message.Response.FailedMessage);
+            command.Parameters.AddWithValue("subject", mail.Subject);
+            command.Parameters.AddWithValue("body", mail.Body);
+            command.Parameters.AddWithValue("result", mail.Response.Result);
+            command.Parameters.AddWithValue("failed_message", mail.Response.FailedMessage);
             command.ExecuteNonQuery();
 
-            foreach (var recipient in message.Recipients)
+            foreach (var recipient in mail.Recipients)
             {
-                using var command2 = new NpgsqlCommand("INSERT INTO emails(message_id, email) VALUES(@id, @email);",
+                using var command2 = new NpgsqlCommand("INSERT INTO email_addresses(mail_id, email_address) VALUES(@id, @email_address);",
                     connection);
                 command2.Parameters.AddWithValue("id", id);
-                command2.Parameters.AddWithValue("email", recipient);
+                command2.Parameters.AddWithValue("email_address", recipient);
                 command2.ExecuteNonQuery();
             }
 
             connection.Close();
         }
 
-        public IEnumerable<Message> GetAll()
+        public IEnumerable<Mail> GetAll()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
-            var messages = connection
-                .Query("SELECT id, subject, body, result, failed_message FROM Messages")
-                .Select(message => new Message(
-                    message.subject,
-                    message.body,
+            var mails = connection
+                .Query("SELECT id, subject, body, result, failed_message FROM mails")
+                .Select(mail => new Mail(
+                    mail.subject,
+                    mail.body,
                     connection
-                        .Query($"SELECT email FROM Emails WHERE message_id = '{message.id}'")
-                        .Select(i => i.email)
+                        .Query($"SELECT email_address FROM email_addresses WHERE mail_id = '{mail.id}'")
+                        .Select(i => i.email_address)
                         .Cast<string>(),
-                    new Response(message.result, message.failed_message))).ToArray();
+                    new Response(mail.result, mail.failed_message))).ToArray();
             connection.Close();
-            return messages;
+            return mails;
         }
 
         private readonly string _connectionString;

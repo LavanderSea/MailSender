@@ -7,15 +7,15 @@ namespace MailSenderAPI
 {
     public static class Extensions
     {
-        public static string ToJson(this IEnumerable<Message> messages)
+        public static string ToJson(this IEnumerable<Mail> mails)
         {
-            return JsonSerializer.Serialize(messages.Select(message => new
+            return JsonSerializer.Serialize(mails.Select(mail => new
             {
-                message.Subject,
-                message.Body,
-                message.Recipients,
-                message.Response.Result,
-                message.Response.FailedMessage
+                mail.Subject,
+                mail.Body,
+                mail.Recipients,
+                mail.Response.Result,
+                mail.Response.FailedMessage
             }));
         }
     }

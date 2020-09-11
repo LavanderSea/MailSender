@@ -13,15 +13,15 @@ namespace MailSenderAPI.Controllers
 
         [HttpPost]
         [Route("/api/mails")]
-        public IActionResult SendMail([FromBody] MessageDto message)
+        public IActionResult SendMail([FromBody] MailDto mail)
         {
-           _service.SendMail(message.Subject, message.Body, message.Recipients);
+           _service.SendMail(mail.Subject, mail.Body, mail.Recipients);
             return Ok();
         }
 
         [HttpGet]
         [Route("/api/mails")]
-        public IActionResult GetAllMail()
+        public IActionResult GetAllMails()
         {
             return Ok(_service.GetAllMails().ToJson());
         }

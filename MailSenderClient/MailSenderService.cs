@@ -1,11 +1,14 @@
 ﻿using MailSenderClient.Infrastructure;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using MailSenderClient.Exceptions;
 
 namespace MailSenderClient
 {
     public class MailSenderService
     {
-        public MailSenderService(IRepository<Message> repository, ISender sender)
+        public MailSenderService(IRepository<Mail> repository, ISender sender)
         {
             _repository = repository;
             _sender = sender;
@@ -13,16 +16,40 @@ namespace MailSenderClient
 
         public void SendMail(string subject, string body, IEnumerable<string> recipients)
         {
+            CheckForNull(subject, body, recipients);
+
+            if(!recipients.Any())
+                throw new IncorrectFieldException("Empty list of emails");
+
+            if (recipients.Any(recipient => string.IsNullOrEmpty(recipient) || !IsValidEmail(recipient)))
+                throw new IncorrectFieldException("Founded incorrect email");
+
             var response = _sender.Send(subject, body, recipients);
-            _repository.Set(new Message(subject, body, recipients, response));
+            _repository.Set(new Mail(subject, body, recipients, response));
         }
 
-        public IEnumerable<Message> GetAllMails()
+        private void CheckForNull(params object[] objects)
+        {
+            foreach (var obj in objects)
+            {
+                if (obj == null)
+                    throw new IncorrectFieldException($"Field {nameof(obj)} did not found");
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            var pattern = "[.\\-_a-z0-9]+@([a-z0-9][\\-a-z0-9]+\\.)+[a-z]{2,6}";
+            var isMatch = Regex.Match(email, pattern, RegexOptions.IgnoreCase);
+            return isMatch.Success;
+        }
+
+        public IEnumerable<Mail> GetAllMails()
         {
             return _repository.GetAll();
         }
 
-        private readonly IRepository<Message> _repository;
+        private readonly IRepository<Mail> _repository;
         private readonly ISender _sender;
 
     }
