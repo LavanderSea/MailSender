@@ -32,6 +32,8 @@ namespace MailSenderAPI
             var connectionString = GetConfigurationValue("ConnectionString", dbConfiguration);
             services.AddSingleton<IRepository<Mail>>(provider => new SqlRepository(connectionString));
 
+            services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
+
             services.AddSingleton<MailSenderService>(provider =>
                 new MailSenderService(provider.GetService<IRepository<Mail>>(), provider.GetService<ISender>()));
         }
