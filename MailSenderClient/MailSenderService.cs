@@ -33,7 +33,7 @@ namespace MailSenderClient
             foreach (var obj in objects)
             {
                 if (obj == null)
-                    throw new IncorrectFieldException($"Field {nameof(obj)} did not found");
+                    throw new IncorrectFieldException("Fewer fields than necessary");
             }
         }
 

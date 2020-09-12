@@ -351,4 +351,6 @@ MigrationBackup/
 
 #Personal Info
 MailSenderAPI/appsettings.Development.json
+MailSenderAPI/appsettings.test.json
 
+/IntegrationTests

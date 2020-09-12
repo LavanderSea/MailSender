@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MailSenderAPI\MailSenderAPI.csproj" />
     <ProjectReference Include="..\MailSenderClient\MailSenderClient.csproj" />
   </ItemGroup>
 

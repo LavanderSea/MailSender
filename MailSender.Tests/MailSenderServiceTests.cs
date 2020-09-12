@@ -54,7 +54,8 @@ namespace MailSender.Tests
                 _service.SendMail(null, "body", new[] { "mail@mail.ru", "mail@gmail.com" });
             }
 
-            Assert.Catch<IncorrectFieldException>(Sending, "Field subject did not found");
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Fewer fields than necessary", exception.Message);
         }
 
         [Test]
@@ -65,7 +66,8 @@ namespace MailSender.Tests
                 _service.SendMail("subject", null, new[] { "mail@mail.ru", "mail@gmail.com" });
             }
 
-            Assert.Catch<IncorrectFieldException>(Sending, "Field body did not found");
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Fewer fields than necessary", exception.Message);
         }
 
         [Test]
@@ -75,8 +77,9 @@ namespace MailSender.Tests
             {
                 _service.SendMail("subject", "body", new[] { "mailmail.ru", "mail@gmail.com" });
             }
-
-            Assert.Catch<IncorrectFieldException>(Sending, "Founded incorrect email");
+            
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Founded incorrect email", exception.Message);
         }
 
         [Test]
@@ -87,7 +90,8 @@ namespace MailSender.Tests
                 _service.SendMail("subject", "body", new[] { null, "mail@gmail.com" });
             }
 
-            Assert.Catch<IncorrectFieldException>(Sending, "Founded incorrect email");
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Founded incorrect email", exception.Message);
         }
 
         [Test]
@@ -98,7 +102,8 @@ namespace MailSender.Tests
                 _service.SendMail("subject", "body", new[] { string.Empty, "mail@gmail.com" });
             }
 
-            Assert.Catch<IncorrectFieldException>(Sending, "Founded incorrect email");
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Founded incorrect email", exception.Message);
         }
 
         [Test]
@@ -109,7 +114,8 @@ namespace MailSender.Tests
                 _service.SendMail("subject", "body", null);
             }
 
-            Assert.Catch<IncorrectFieldException>(Sending, "Field recipients did not found");
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Fewer fields than necessary", exception.Message);
         }
 
         [Test]
@@ -120,7 +126,8 @@ namespace MailSender.Tests
                 _service.SendMail("subject", "body", Array.Empty<string>());
             }
 
-            Assert.Catch<IncorrectFieldException>(Sending, "Empty list of emails");
+            var exception = Assert.Throws<IncorrectFieldException>(Sending);
+            Assert.AreEqual("Empty list of emails", exception.Message);
         }
 
         public ISender CreateSenderMock()

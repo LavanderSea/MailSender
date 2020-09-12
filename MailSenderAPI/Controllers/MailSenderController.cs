@@ -1,4 +1,5 @@
-﻿using MailSenderClient;
+﻿using System.Linq;
+using MailSenderClient;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MailSenderAPI.Controllers
@@ -23,7 +24,12 @@ namespace MailSenderAPI.Controllers
         [Route("/api/mails")]
         public IActionResult GetAllMails()
         {
-            return Ok(_service.GetAllMails().ToJson());
+            var mails = _service.GetAllMails();
+
+            if (mails != null && mails.Any())
+                return Ok(mails.ToJson());
+            else
+                return BadRequest("Mails did not found");
         }
 
         private readonly MailSenderService _service;
