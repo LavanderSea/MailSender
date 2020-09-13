@@ -77,7 +77,7 @@ namespace IntegrationTests {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на [{&quot;Subject&quot;:&quot;test_subject&quot;,&quot;Body&quot;:&quot;test_body&quot;,&quot;Recipients&quot;:[&quot;first@gmail.com&quot;,&quot;second@gmail.com&quot;],&quot;Result&quot;:&quot;test_result&quot;,&quot;FailedMessage&quot;:&quot;test_message&quot;}].
+        ///   Ищет локализованную строку, похожую на [{&quot;Subject&quot;:&quot;test_subject&quot;,&quot;Body&quot;:&quot;test_body&quot;,&quot;Recipients&quot;:[&quot;first@gmail.com&quot;,&quot;second@gmail.com&quot;],&quot;date&quot;:&quot;01.01.0001 3:00&quot;,&quot;Result&quot;:&quot;test_result&quot;,&quot;FailedMessage&quot;:&quot;test_message&quot;}].
         /// </summary>
         public static string CorrectMails {
             get {

@@ -121,7 +121,7 @@
     <value>CREATE TABLE IF NOT EXISTS email_addresses (mail_id UUID,email_address VARCHAR(128),FOREIGN KEY(mail_id) REFERENCES mails(id));</value>
   </data>
   <data name="CreateMailsTable" xml:space="preserve">
-    <value>CREATE TABLE IF NOT EXISTS mails (id uuid PRIMARY KEY,subject TEXT,body TEXT,result VARCHAR(16),failed_message TEXT);</value>
+    <value>CREATE TABLE IF NOT EXISTS mails (id uuid PRIMARY KEY,subject TEXT,body TEXT, date TIMESTAMP with time zone NOT NULL, result VARCHAR(16),failed_message TEXT);</value>
   </data>
   <data name="DeleteEmailAddresses" xml:space="preserve">
     <value>DELETE FROM email_addresses;</value>
@@ -136,6 +136,6 @@
     <value>INSERT INTO email_addresses(mail_id, email_address)	VALUES (@id, 'first@gmail.com'), (@id, 'second@gmail.com');</value>
   </data>
   <data name="InsertMails" xml:space="preserve">
-    <value>INSERT INTO mails(id, subject, body, result, failed_message)VALUES(@id, 'test_subject', 'test_body', 'test_result', 'test_message');</value>
+    <value>INSERT INTO mails(id, subject, body, date, result, failed_message)VALUES(@id, 'test_subject', 'test_body', @date, 'test_result', 'test_message');</value>
   </data>
 </root>

@@ -34,8 +34,7 @@ namespace MailSenderAPI
 
             services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
 
-            services.AddSingleton<MailSenderService>(provider =>
-                new MailSenderService(provider.GetService<IRepository<Mail>>(), provider.GetService<ISender>()));
+            RegisterMailSenderService(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +50,13 @@ namespace MailSenderAPI
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+        }
+
+        protected virtual void RegisterMailSenderService(IServiceCollection services)
+        {
+            services.AddSingleton<MailSenderService>(provider =>
+                new MailSenderService(provider.GetService<IRepository<Mail>>(), provider.GetService<ISender>()));
         }
 
         private static string GetConfigurationValue(string sectionKey, IConfigurationSection configurationSection)

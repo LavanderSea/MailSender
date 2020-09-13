@@ -22,14 +22,14 @@ namespace IntegrationTests {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class DatabaseResource {
+    public class DatabaseResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DatabaseResource() {
+        internal DatabaseResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace IntegrationTests {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("IntegrationTests.DatabaseResources", typeof(DatabaseResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("IntegrationTests.DatabaseResources", typeof(DatabaseResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -70,7 +70,7 @@ namespace IntegrationTests {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на CREATE TABLE IF NOT EXISTS mails (id uuid PRIMARY KEY,subject TEXT,body TEXT,result VARCHAR(16),failed_message TEXT);.
+        ///   Ищет локализованную строку, похожую на CREATE TABLE IF NOT EXISTS mails (id uuid PRIMARY KEY,subject TEXT,body TEXT, date TIMESTAMP with time zone NOT NULL, result VARCHAR(16),failed_message TEXT);.
         /// </summary>
         public static string CreateMailsTable {
             get {
@@ -115,7 +115,7 @@ namespace IntegrationTests {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на INSERT INTO mails(id, subject, body, result, failed_message)VALUES(@id, &apos;test_subject&apos;, &apos;test_body&apos;, &apos;test_result&apos;, &apos;test_message&apos;);.
+        ///   Ищет локализованную строку, похожую на INSERT INTO mails(id, subject, body, date, result, failed_message)VALUES(@id, &apos;test_subject&apos;, &apos;test_body&apos;, @date, &apos;test_result&apos;, &apos;test_message&apos;);.
         /// </summary>
         public static string InsertMails {
             get {

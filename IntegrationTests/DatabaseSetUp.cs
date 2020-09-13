@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Dapper;
 using MailSenderClient;
@@ -12,23 +13,23 @@ namespace IntegrationTests
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
-            var id = Guid.Parse(DatabaseResource.Id);
+            var id = Guid.Parse(DatabaseResources.Id);
             using var connection = new NpgsqlConnection(GetConnectionString());
 
             connection.Open();
 
             ExecuteAll(
                 connection,
-                DatabaseResource.CreateMailsTable,
-                DatabaseResource.CreateEmailAddressesTable,
-                DatabaseResource.DeleteEmailAddresses,
-                DatabaseResource.DeleteMails);
+                DatabaseResources.CreateMailsTable,
+                DatabaseResources.CreateEmailAddressesTable,
+                DatabaseResources.DeleteEmailAddresses,
+                DatabaseResources.DeleteMails);
 
             InsertAll(
                 connection,
                 id,
-                DatabaseResource.InsertMails,
-                DatabaseResource.InsertEmailAddresses);
+                DatabaseResources.InsertMails,
+                DatabaseResources.InsertEmailAddresses);
 
             connection.Close();
         }
@@ -44,6 +45,7 @@ namespace IntegrationTests
             {
                 using var command = new NpgsqlCommand(script, connection);
                 command.Parameters.AddWithValue("id", id);
+                command.Parameters.AddWithValue("date", DateTimeOffset.MinValue);
                 command.ExecuteNonQuery();
             }
         }
@@ -56,8 +58,8 @@ namespace IntegrationTests
 
             ExecuteAll(
                 connection,
-                DatabaseResource.DeleteEmailAddresses,
-                DatabaseResource.DeleteMails);
+                DatabaseResources.DeleteEmailAddresses,
+                DatabaseResources.DeleteMails);
 
             connection.Close();
         }
@@ -70,21 +72,21 @@ namespace IntegrationTests
 
             ExecuteAll(
                 connection,
-                DatabaseResource.DeleteEmailAddresses,
-                DatabaseResource.DeleteMails);
+                DatabaseResources.DeleteEmailAddresses,
+                DatabaseResources.DeleteMails);
             
             connection.Close();
         }
 
         protected Mail GetLastMail()
         {
-            var id = Guid.Parse(DatabaseResource.Id);
+            var id = Guid.Parse(DatabaseResources.Id);
             using var connection = new NpgsqlConnection(GetConnectionString());
             connection.Open();
 
 
             var mail = connection
-                .Query($"SELECT id, subject, body, result, failed_message FROM mails WHERE id <> '{id}'")
+                .Query($"SELECT id, subject, body, date, result, failed_message FROM mails WHERE id <> '{id}'")
                 .Select(mail => new Mail(
                     mail.subject,
                     mail.body,
@@ -92,6 +94,7 @@ namespace IntegrationTests
                         .Query($"SELECT email_address FROM email_addresses WHERE mail_id = '{mail.id}'")
                         .Select(i => i.email_address)
                         .Cast<string>(),
+                    DateTimeOffset.ParseExact(mail.date.ToString(), "dd.MM.yyyy H:mm:ss", null, DateTimeStyles.AllowWhiteSpaces), 
                     new Response(mail.result, mail.failed_message))).ToArray();
             connection.Close();
 

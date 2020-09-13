@@ -15,7 +15,7 @@ namespace MailSender.Tests
         {
             var sender = CreateSenderMock();
             var repository = new StubRepository();
-            _service = new MailSenderService(repository, sender);
+            _service = new TestMailSenderService(repository, sender);
         }
 
         [Test]
@@ -23,23 +23,22 @@ namespace MailSender.Tests
         {
             var sender = CreateSenderMock();
             var repository = new StubRepository();
-            var service = new MailSenderService(repository, sender);
+            var service = new TestMailSenderService(repository, sender);
 
             var messages = service.GetAllMails();
 
             Assert.AreEqual(repository.Messages, messages);
         }
 
-
         [Test]
         public void SendMail_CorrectMail_Ok()
         {
-            var message = new Mail("subject", "body", new[] { "mail@mail.ru", "mail@gmail.com" },
+            var message = new Mail("subject", "body", new[] { "mail@mail.ru", "mail@gmail.com" }, DateTimeOffset.MinValue,
                 new Response("Ok", string.Empty));
 
             var sender = CreateSenderMock();
             var repository = new StubRepository();
-            var service = new MailSenderService(repository, sender);
+            var service = new TestMailSenderService(repository, sender);
 
             service.SendMail("subject", "body", new[] { "mail@mail.ru", "mail@gmail.com" });
 
@@ -77,7 +76,7 @@ namespace MailSender.Tests
             {
                 _service.SendMail("subject", "body", new[] { "mailmail.ru", "mail@gmail.com" });
             }
-            
+
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
             Assert.AreEqual("Founded incorrect email", exception.Message);
         }

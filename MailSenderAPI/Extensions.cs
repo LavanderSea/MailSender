@@ -14,6 +14,7 @@ namespace MailSenderAPI
                 mail.Subject,
                 mail.Body,
                 mail.Recipients,
+                date = mail.Date.ToString("g"),
                 mail.Response.Result,
                 mail.Response.FailedMessage
             }));

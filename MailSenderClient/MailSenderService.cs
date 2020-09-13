@@ -1,4 +1,5 @@
-﻿using MailSenderClient.Infrastructure;
+﻿using System;
+using MailSenderClient.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,6 +15,11 @@ namespace MailSenderClient
             _sender = sender;
         }
 
+        protected virtual DateTimeOffset GetActualTime()
+        {
+            return DateTimeOffset.Now;
+        }
+
         public void SendMail(string subject, string body, IEnumerable<string> recipients)
         {
             CheckForNull(subject, body, recipients);
@@ -25,7 +31,7 @@ namespace MailSenderClient
                 throw new IncorrectFieldException("Founded incorrect email");
 
             var response = _sender.Send(subject, body, recipients);
-            _repository.Set(new Mail(subject, body, recipients, response));
+            _repository.Set(new Mail(subject, body, recipients, GetActualTime(), response));
         }
 
         private void CheckForNull(params object[] objects)

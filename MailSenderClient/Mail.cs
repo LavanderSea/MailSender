@@ -6,14 +6,16 @@ namespace MailSenderClient
 {
     public class Mail
     {
-        public Mail(string subject, string body, IEnumerable<string> recipients, Response response)
+        public Mail(string subject, string body, IEnumerable<string> recipients, DateTimeOffset date, Response response)
         {
             Subject = subject;
             Body = body;
             Recipients = recipients;
+            Date = date;
             Response = response;
         }
 
+        public DateTimeOffset Date { get; }
         public string Subject { get; }
         public string Body { get; }
         public IEnumerable<string> Recipients { get; }
@@ -21,8 +23,11 @@ namespace MailSenderClient
 
         protected bool Equals(Mail other)
         {
-            return Body == other.Body && Recipients.SequenceEqual(other.Recipients) &&
-                   Equals(Response, other.Response) && Subject == other.Subject;
+            return Body == other.Body &&
+                   Recipients.SequenceEqual(other.Recipients) &&
+                   Equals(Response, other.Response) &&
+                   Subject == other.Subject &&
+                   Date.Equals(other.Date);
         }
 
         public override bool Equals(object obj)
@@ -38,7 +43,7 @@ namespace MailSenderClient
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Body, Recipients, Response, Subject);
+            return HashCode.Combine(Body, Recipients, Response, Subject, Date);
         }
 
         public static bool operator ==(Mail left, Mail right)

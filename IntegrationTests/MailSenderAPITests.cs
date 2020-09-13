@@ -1,3 +1,4 @@
+using System;
 using MailSenderClient;
 using NUnit.Framework;
 using System.Net;
@@ -45,6 +46,7 @@ namespace IntegrationTests
                     "ta.nya.smith1712@gmail.com",
                     "tanya.smith1712@gmail.com"
                  },
+                 DateTimeOffset.MinValue, 
                  new Response(
                      "Ok",
                      string.Empty));

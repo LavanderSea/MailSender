@@ -128,7 +128,7 @@
 }</value>
   </data>
   <data name="CorrectMails" xml:space="preserve">
-    <value>[{"Subject":"test_subject","Body":"test_body","Recipients":["first@gmail.com","second@gmail.com"],"Result":"test_result","FailedMessage":"test_message"}]</value>
+    <value>[{"Subject":"test_subject","Body":"test_body","Recipients":["first@gmail.com","second@gmail.com"],"date":"01.01.0001 3:00","Result":"test_result","FailedMessage":"test_message"}]</value>
   </data>
   <data name="IncorrectMail.EmptyRecipients" xml:space="preserve">
     <value>{  
