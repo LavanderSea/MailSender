@@ -1,69 +1,101 @@
-﻿using Dapper;
-using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
+using Dapper;
+using MailSenderClient.Models;
+using Npgsql;
 
 namespace MailSenderClient.Infrastructure
 {
-    public class SqlRepository : IRepository<Mail>
+    public class SqlRepository : IRepository<Message>
     {
+        private readonly string _connectionString;
+
         public SqlRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public void Set(Mail mail)
+        /// <summary>
+        ///     Insert a message into database
+        /// </summary>
+        public void Insert(Message message)
         {
             var id = Guid.NewGuid();
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
-            using var command =
-                new NpgsqlCommand(
-                    "INSERT INTO mails(id, subject, body, date, result, failed_message) VALUES(@id, @subject, @body, @date, @result, @failed_message);",
-                    connection);
-            command.Parameters.AddWithValue("id", id);
-            command.Parameters.AddWithValue("subject", mail.Subject);
-            command.Parameters.AddWithValue("body", mail.Body);
-            command.Parameters.AddWithValue("date", mail.Date);
-            command.Parameters.AddWithValue("result", mail.Response.Result);
-            command.Parameters.AddWithValue("failed_message", mail.Response.FailedMessage);
-            command.ExecuteNonQuery();
 
-            foreach (var recipient in mail.Recipients)
+            var parameters = new Dictionary<string, object>
             {
-                using var command2 = new NpgsqlCommand("INSERT INTO email_addresses(mail_id, email_address) VALUES(@id, @email_address);",
-                    connection);
-                command2.Parameters.AddWithValue("id", id);
-                command2.Parameters.AddWithValue("email_address", recipient);
-                command2.ExecuteNonQuery();
-            }
+                {"id", id},
+                {"subject", message.Subject},
+                {"body", message.Body},
+                {"date", message.Date},
+                {"result", message.Response.Result},
+                {"failed_message", message.Response.FailedMessage}
+            };
+
+            Execute(connection, SqlRepositoryResource.InsertMessages, parameters);
+
+            foreach (var recipient in message.Recipients)
+                Execute(
+                    connection,
+                    SqlRepositoryResource.InsertRecipients,
+                    new Dictionary<string, object> {{"id", id}, {"email_address", recipient}});
 
             connection.Close();
         }
 
-        public IEnumerable<Mail> GetAll()
+        /// <summary>
+        ///     Receive all messages from database
+        /// </summary>
+        public IEnumerable<Message> GetAll()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
-            
+
             var mails = connection
-                .Query("SELECT id, subject, body, date, result, failed_message FROM mails")
-                .Select(mail => new Mail(
-                    mail.subject,
-                    mail.body,
-                    connection
-                        .Query($"SELECT email_address FROM email_addresses WHERE mail_id = '{mail.id}'")
-                        .Select(i => i.email_address)
-                        .Cast<string>(),
-                    DateTimeOffset.ParseExact(mail.date.ToString(), "dd.MM.yyyy H:mm:ss", null,  DateTimeStyles.AllowWhiteSpaces),
-                    new Response(mail.result, mail.failed_message))).ToArray();
+                .Query(SqlRepositoryResource.SelectAllMessages)
+                .Select(message => new Message(
+                    message.subject,
+                    message.body,
+                    SelectMessageRecipients(connection, message.id),
+                    ParseDate(message.date),
+                    new Response(message.result, message.failed_message)))
+                .ToArray();
 
             connection.Close();
             return mails;
         }
 
-        private readonly string _connectionString;
+        private DateTimeOffset ParseDate(dynamic date)
+        {
+            DateTimeOffset.TryParseExact(
+                date.ToString(),
+                "dd.MM.yyyy H:mm:ss",
+                null,
+                DateTimeStyles.AllowWhiteSpaces,
+                out DateTimeOffset dateTime);
+            return dateTime;
+        }
+
+        private IEnumerable<string> SelectMessageRecipients(IDbConnection connection, dynamic id)
+        {
+            return connection
+                .Query($"SELECT email_address FROM recipients WHERE message_id = '{id}'")
+                .Select(i => i.email_address)
+                .Cast<string>();
+        }
+
+        private void Execute(NpgsqlConnection connection, string sqlScript, Dictionary<string, object> parameters)
+        {
+            using var command = new NpgsqlCommand(sqlScript, connection);
+            foreach (var (name, value) in parameters)
+                command.Parameters.AddWithValue(name, value);
+
+            command.ExecuteNonQuery();
+        }
     }
 }

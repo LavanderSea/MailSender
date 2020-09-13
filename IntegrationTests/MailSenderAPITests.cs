@@ -1,10 +1,10 @@
 using System;
-using MailSenderClient;
-using NUnit.Framework;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using MailSenderClient.Models;
+using NUnit.Framework;
 using Resource = IntegrationTests.MailSenderAPITestsResource;
 
 namespace IntegrationTests
@@ -12,73 +12,61 @@ namespace IntegrationTests
     public class MailSenderAPITests : DatabaseSetUp
     {
         [Test]
-        public async Task GetAllMailsWithAddresses_GetRequest_CorrectResponse()
+        public async Task GetAllMessagesWithAddresses_GetRequest_CorrectResponse()
         {
+            DeleteAllData();
+            InsertData();
+
             var response = await Client.GetAsync("/api/mails");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
 
-            Assert.AreEqual(Resource.CorrectMails, responseString);
+            Assert.AreEqual(Resource.CorrectMessages, responseString);
         }
 
         [Test]
-        public async Task GetAllMailsWithAddressesWhenTablesAreEmpty_GetRequest_CorrectResponse()
+        public async Task GetAllMessagesWhenTablesAreEmpty_GetRequest_CorrectResponse()
         {
             DeleteAllData();
             var response = await Client.GetAsync("/api/mails");
             var result = response.Content.ReadAsStringAsync().Result;
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("Mails did not found", result);
+            Assert.AreEqual("Messages did not found", result);
         }
 
         [Test]
-        public async Task PostMail_CorrectMail_Ok()
+        public async Task PostMessage_CorrectMessage_Ok()
         {
             var httpContent =
-                new StringContent(Resource.CorrectMail, Encoding.UTF8, "application/json");
-            var expectedMail = new Mail(
-                 "Hello",
-                 "Body here",
-                 new[]
-                 {
+                new StringContent(Resource.CorrectMessage, Encoding.UTF8, "application/json");
+            var expectedMessage = new Message(
+                "Hello",
+                "Body here",
+                new[]
+                {
                     "ta.nya.smith1712@gmail.com",
                     "tanya.smith1712@gmail.com"
-                 },
-                 DateTimeOffset.MinValue, 
-                 new Response(
-                     "Ok",
-                     string.Empty));
+                },
+                DateTimeOffset.MinValue,
+                new Response(
+                    "Ok",
+                    string.Empty));
 
             var response =
-               await Client.PostAsync("/api/mails", httpContent);
+                await Client.PostAsync("/api/mails", httpContent);
             response.EnsureSuccessStatusCode();
-            var actualMail = GetLastMail();
+            var actualMessage = GetLastMessage();
 
-            Assert.AreEqual(expectedMail, actualMail);
+            Assert.AreEqual(expectedMessage, actualMessage);
         }
 
         [Test]
-        public async Task PostMail_MailWithNullSubject_BadRequest()
+        public async Task PostMessage_MessageWithNullSubject_BadRequest()
         {
             var httpContent =
-                new StringContent(Resource.IncorrectMail_NullSubject, Encoding.UTF8, "application/json");
-            
-            var response =
-                await Client.PostAsync("/api/mails", httpContent);
-
-            var result = response.Content.ReadAsStringAsync().Result;
-
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("Fewer fields than necessary", result);
-        }
-
-        [Test]
-        public async Task PostMail_MailWithNullBody_BadRequest()
-        {
-            var httpContent =
-                new StringContent(Resource.IncorrectMail_NullBody, Encoding.UTF8, "application/json");
+                new StringContent(Resource.IncorrectMessage_NullSubject, Encoding.UTF8, "application/json");
 
             var response =
                 await Client.PostAsync("/api/mails", httpContent);
@@ -90,10 +78,10 @@ namespace IntegrationTests
         }
 
         [Test]
-        public async Task PostMail_MailWithNullRecipients_BadRequest()
+        public async Task PostMessage_MessageWithNullBody_BadRequest()
         {
             var httpContent =
-                new StringContent(Resource.IncorrectMail_NullRecipients, Encoding.UTF8, "application/json");
+                new StringContent(Resource.IncorrectMessage_NullBody, Encoding.UTF8, "application/json");
 
             var response =
                 await Client.PostAsync("/api/mails", httpContent);
@@ -105,10 +93,10 @@ namespace IntegrationTests
         }
 
         [Test]
-        public async Task PostMail_MailWithIncorrectEmailAddress_BadRequest()
+        public async Task PostMessage_MessageWithNullRecipients_BadRequest()
         {
             var httpContent =
-                new StringContent(Resource.MailWithIncorrectEmailAddress, Encoding.UTF8, "application/json");
+                new StringContent(Resource.IncorrectMessage_NullRecipients, Encoding.UTF8, "application/json");
 
             var response =
                 await Client.PostAsync("/api/mails", httpContent);
@@ -116,14 +104,14 @@ namespace IntegrationTests
             var result = response.Content.ReadAsStringAsync().Result;
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("Founded incorrect email", result);
+            Assert.AreEqual("Fewer fields than necessary", result);
         }
 
         [Test]
-        public async Task PostMail_MailWithEmptyRecipients_BadRequest()
+        public async Task PostMessage_MessageWithIncorrectEmailAddress_BadRequest()
         {
             var httpContent =
-                new StringContent(Resource.IncorrectMail_EmptyRecipients, Encoding.UTF8, "application/json");
+                new StringContent(Resource.MessageWithIncorrectEmailAddress, Encoding.UTF8, "application/json");
 
             var response =
                 await Client.PostAsync("/api/mails", httpContent);
@@ -131,7 +119,22 @@ namespace IntegrationTests
             var result = response.Content.ReadAsStringAsync().Result;
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("Empty list of emails", result);
+            Assert.AreEqual("Found incorrect email", result);
+        }
+
+        [Test]
+        public async Task PostMessage_MessageWithEmptyRecipients_BadRequest()
+        {
+            var httpContent =
+                new StringContent(Resource.IncorrectMessage_EmptyRecipients, Encoding.UTF8, "application/json");
+
+            var response =
+                await Client.PostAsync("/api/mails", httpContent);
+
+            var result = response.Content.ReadAsStringAsync().Result;
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("Empty list of recipients", result);
         }
     }
 }

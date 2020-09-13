@@ -1,11 +1,12 @@
+using System;
 using MailSenderClient;
 using MailSenderClient.Infrastructure;
+using MailSenderClient.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace MailSenderAPI
 {
@@ -26,11 +27,12 @@ namespace MailSenderAPI
             var stmpConfiguration = Configuration.GetSection("STMPConfiguration");
             var password = GetConfigurationValue("Password", stmpConfiguration);
             var userId = GetConfigurationValue("UserId", stmpConfiguration);
-            services.AddSingleton<ISender>(provider => new GmailSender(password, userId));
+            var port = int.Parse(GetConfigurationValue("Port", stmpConfiguration));
+            services.AddSingleton<ISender>(provider => new GmailSender(password, userId, port));
 
             var dbConfiguration = Configuration.GetSection("DbConfiguration");
             var connectionString = GetConfigurationValue("ConnectionString", dbConfiguration);
-            services.AddSingleton<IRepository<Mail>>(provider => new SqlRepository(connectionString));
+            services.AddSingleton<IRepository<Message>>(provider => new SqlRepository(connectionString));
 
             services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
 
@@ -50,13 +52,12 @@ namespace MailSenderAPI
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
         }
 
         protected virtual void RegisterMailSenderService(IServiceCollection services)
         {
-            services.AddSingleton<MailSenderService>(provider =>
-                new MailSenderService(provider.GetService<IRepository<Mail>>(), provider.GetService<ISender>()));
+            services.AddSingleton(provider =>
+                new MailSenderService(provider.GetService<IRepository<Message>>(), provider.GetService<ISender>()));
         }
 
         private static string GetConfigurationValue(string sectionKey, IConfigurationSection configurationSection)

@@ -7,31 +7,36 @@ namespace MailSenderAPI.Controllers
     [ApiController]
     public class MailSenderController : ControllerBase
     {
+        private readonly MailSenderService _service;
+
         public MailSenderController(MailSenderService service)
         {
             _service = service;
         }
 
+        /// <summary>
+        ///     Send message with given parameters
+        /// </summary>
         [HttpPost]
         [Route("/api/mails")]
-        public IActionResult SendMail([FromBody] MailDto mail)
+        public IActionResult SendMessage([FromBody] MessageDto message)
         {
-           _service.SendMail(mail.Subject, mail.Body, mail.Recipients);
+            _service.SendMessage(message.Subject, message.Body, message.Recipients);
             return Ok();
         }
 
+        /// <summary>
+        ///     Get all messages from server
+        /// </summary>
         [HttpGet]
         [Route("/api/mails")]
-        public IActionResult GetAllMails()
+        public IActionResult GetAllMessages()
         {
-            var mails = _service.GetAllMails();
+            var messages = _service.GetAllMessages();
 
-            if (mails != null && mails.Any())
-                return Ok(mails.ToJson());
-            else
-                return BadRequest("Mails did not found");
+            if (messages != null && messages.Any())
+                return Ok(messages.ToJson());
+            return BadRequest("Messages did not found");
         }
-
-        private readonly MailSenderService _service;
     }
 }

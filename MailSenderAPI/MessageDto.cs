@@ -2,7 +2,7 @@
 
 namespace MailSenderAPI
 {
-    public class MailDto
+    public class MessageDto
     {
         public string Subject { get; set; }
         public string Body { get; set; }

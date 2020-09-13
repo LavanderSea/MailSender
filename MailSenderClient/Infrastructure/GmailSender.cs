@@ -2,17 +2,27 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
+using MailSenderClient.Models;
 
-namespace MailSenderClient
+namespace MailSenderClient.Infrastructure
 {
     public class GmailSender : ISender
     {
-        public GmailSender(string password, string userName)
+        private readonly string _password;
+        private readonly int _port;
+        private readonly string _userName;
+
+        public GmailSender(string password, string userName, int port)
         {
             _password = password;
             _userName = userName;
+            _port = port;
         }
 
+        /// <summary>
+        ///     Send a message and receive result: status of sending ("Ok or "Failed") and message about failing (empty field if
+        ///     sending succeed)
+        /// </summary>
         public Response Send(string subject, string body, IEnumerable<string> recipients)
         {
             using var mail = new MailMessage();
@@ -24,7 +34,7 @@ namespace MailSenderClient
 
             var client = new SmtpClient("smtp.gmail.com")
             {
-                Port = 587,
+                Port = _port,
                 Credentials = new NetworkCredential(_userName, _password),
                 EnableSsl = true
             };
@@ -44,8 +54,5 @@ namespace MailSenderClient
 
             return new Response("Ok", string.Empty);
         }
-
-        private readonly string _password;
-        private readonly string _userName;
     }
 }

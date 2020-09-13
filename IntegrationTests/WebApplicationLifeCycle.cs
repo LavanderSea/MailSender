@@ -1,12 +1,13 @@
-﻿using MailSenderAPI;
+﻿using System.Net.Http;
+using MailSenderAPI;
 using MailSenderClient;
 using MailSenderClient.Infrastructure;
+using MailSenderClient.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
 
 namespace IntegrationTests
 {
@@ -19,7 +20,8 @@ namespace IntegrationTests
         protected override void RegisterMailSenderService(IServiceCollection services)
         {
             services.AddSingleton(services.AddSingleton<MailSenderService>(provider =>
-                new TestMailSenderService(provider.GetService<IRepository<Mail>>(), provider.GetService<ISender>())));
+                new TestMailSenderService(provider.GetService<IRepository<Message>>(),
+                    provider.GetService<ISender>())));
         }
     }
 

@@ -1,30 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using MailSenderClient;
 using MailSenderClient.Infrastructure;
+using MailSenderClient.Models;
 
 namespace MailSender.Tests.Stubs
 {
-    public class StubRepository : IRepository<Mail>
+    public class StubRepository : IRepository<Message>
     {
-        public Mail Mail { get; private set; }
+        public Message Message { get; private set; }
 
-        public IEnumerable<Mail> Messages { get; } = new[]
+        public IEnumerable<Message> Messages { get; } = new []
         {
-            new Mail("subject", "body", new[] {"mail@mail.ru", "mail@gmail.com"}, DateTimeOffset.MinValue, 
+            new Message(
+                "subject",
+                "body",
+                new[]
+                {
+                    "mail@mail.ru",
+                    "mail@gmail.com"
+                },
+                DateTimeOffset.MinValue,
                 new Response("Ok", string.Empty)),
-            new Mail("subject_2", "body_2", new[] {"mail2@mail.ru", "mail2@gmail.com"}, DateTimeOffset.MinValue,
+            new Message(
+                "subject_2",
+                "body_2",
+                new[]
+                {
+                    "mail2@mail.ru",
+                    "mail2@gmail.com"
+                },
+                DateTimeOffset.MinValue,
                 new Response("Failed", "Just because"))
         };
 
-        public void Set(Mail mail)
-        {
-            Mail = mail;
-        }
-
-        public IEnumerable<Mail> GetAll()
-        {
-            return Messages;
-        }
+        public void Insert(Message message) => Message = message;
+        public IEnumerable<Message> GetAll() => Messages;
     }
 }

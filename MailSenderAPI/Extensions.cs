@@ -1,22 +1,25 @@
-﻿using MailSenderClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using MailSenderClient.Models;
 
 namespace MailSenderAPI
 {
     public static class Extensions
     {
-        public static string ToJson(this IEnumerable<Mail> mails)
+        /// <summary>
+        ///     Serialize messages to json
+        /// </summary>
+        public static string ToJson(this IEnumerable<Message> messages)
         {
-            return JsonSerializer.Serialize(mails.Select(mail => new
+            return JsonSerializer.Serialize(messages.Select(message => new
             {
-                mail.Subject,
-                mail.Body,
-                mail.Recipients,
-                date = mail.Date.ToString("g"),
-                mail.Response.Result,
-                mail.Response.FailedMessage
+                message.Subject,
+                message.Body,
+                message.Recipients,
+                date = message.Date.ToString("g"),
+                message.Response.Result,
+                message.Response.FailedMessage
             }));
         }
     }

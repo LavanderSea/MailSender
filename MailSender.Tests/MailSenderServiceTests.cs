@@ -1,56 +1,54 @@
+using System;
+using System.Collections.Generic;
 using MailSender.Tests.Stubs;
 using MailSenderClient;
 using MailSenderClient.Exceptions;
+using MailSenderClient.Infrastructure;
+using MailSenderClient.Models;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MailSender.Tests
 {
     public class MailSenderServiceTests
     {
+        private StubRepository _repository;
+        private MailSenderService _service;
+
         [SetUp]
         public void Setup()
         {
             var sender = CreateSenderMock();
-            var repository = new StubRepository();
-            _service = new TestMailSenderService(repository, sender);
+            _repository = new StubRepository();
+            _service = new TestMailSenderService(_repository, sender);
         }
 
         [Test]
-        public void GetMails_CorrectMails()
+        public void GetMessages_CorrectMessages()
         {
-            var sender = CreateSenderMock();
-            var repository = new StubRepository();
-            var service = new TestMailSenderService(repository, sender);
+            var messages = _service.GetAllMessages();
 
-            var messages = service.GetAllMails();
-
-            Assert.AreEqual(repository.Messages, messages);
+            Assert.AreEqual(_repository.Messages, messages);
         }
 
         [Test]
-        public void SendMail_CorrectMail_Ok()
+        public void SendMessage_CorrectMessage_Ok()
         {
-            var message = new Mail("subject", "body", new[] { "mail@mail.ru", "mail@gmail.com" }, DateTimeOffset.MinValue,
+            var message = new Message("subject", "body", new[] {"mail@mail.ru", "mail@gmail.com"},
+                DateTimeOffset.MinValue,
                 new Response("Ok", string.Empty));
 
-            var sender = CreateSenderMock();
-            var repository = new StubRepository();
-            var service = new TestMailSenderService(repository, sender);
+            _service.SendMessage("subject", "body", new[] {"mail@mail.ru", "mail@gmail.com"});
 
-            service.SendMail("subject", "body", new[] { "mail@mail.ru", "mail@gmail.com" });
-
-            Assert.AreEqual(message, repository.Mail);
+            Assert.AreEqual(message, _repository.Message);
         }
 
         [Test]
-        public void SendMail_NullSubject_IncorrectFieldException()
+        public void SendMessage_NullSubject_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail(null, "body", new[] { "mail@mail.ru", "mail@gmail.com" });
+                _service.SendMessage(null, "body", new[] {"mail@mail.ru", "mail@gmail.com"});
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
@@ -58,11 +56,11 @@ namespace MailSender.Tests
         }
 
         [Test]
-        public void SendMail_NullBody_IncorrectFieldException()
+        public void SendMessage_NullBody_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail("subject", null, new[] { "mail@mail.ru", "mail@gmail.com" });
+                _service.SendMessage("subject", null, new[] {"mail@mail.ru", "mail@gmail.com"});
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
@@ -70,47 +68,47 @@ namespace MailSender.Tests
         }
 
         [Test]
-        public void SendMail_IncorrectEmail_IncorrectFieldException()
+        public void SendMessage_IncorrectEmail_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail("subject", "body", new[] { "mailmail.ru", "mail@gmail.com" });
+                _service.SendMessage("subject", "body", new[] {"mailmail.ru", "mail@gmail.com"});
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
-            Assert.AreEqual("Founded incorrect email", exception.Message);
+            Assert.AreEqual("Found incorrect email", exception.Message);
         }
 
         [Test]
-        public void SendMail_NullEmail_IncorrectFieldException()
+        public void SendMessage_NullEmail_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail("subject", "body", new[] { null, "mail@gmail.com" });
+                _service.SendMessage("subject", "body", new[] {null, "mail@gmail.com"});
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
-            Assert.AreEqual("Founded incorrect email", exception.Message);
+            Assert.AreEqual("Found incorrect email", exception.Message);
         }
 
         [Test]
-        public void SendMail_EmptyEmail_IncorrectFieldException()
+        public void SendMessage_EmptyEmail_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail("subject", "body", new[] { string.Empty, "mail@gmail.com" });
+                _service.SendMessage("subject", "body", new[] {string.Empty, "mail@gmail.com"});
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
-            Assert.AreEqual("Founded incorrect email", exception.Message);
+            Assert.AreEqual("Found incorrect email", exception.Message);
         }
 
         [Test]
-        public void SendMail_NullEmails_IncorrectFieldException()
+        public void SendMessage_NullRecipients_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail("subject", "body", null);
+                _service.SendMessage("subject", "body", null);
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
@@ -118,15 +116,15 @@ namespace MailSender.Tests
         }
 
         [Test]
-        public void SendMail_EmptyEmails_IncorrectFieldException()
+        public void SendMessage_EmptyRecipients_IncorrectFieldException()
         {
             void Sending()
             {
-                _service.SendMail("subject", "body", Array.Empty<string>());
+                _service.SendMessage("subject", "body", Array.Empty<string>());
             }
 
             var exception = Assert.Throws<IncorrectFieldException>(Sending);
-            Assert.AreEqual("Empty list of emails", exception.Message);
+            Assert.AreEqual("Empty list of recipients", exception.Message);
         }
 
         public ISender CreateSenderMock()
@@ -137,9 +135,5 @@ namespace MailSender.Tests
                 .Returns(new Response("Ok", string.Empty));
             return mock.Object;
         }
-
-        private MailSenderService _service;
     }
-
-
 }

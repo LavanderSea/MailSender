@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using Dapper;
-using MailSenderClient;
+using MailSenderClient.Models;
 using Npgsql;
 using NUnit.Framework;
 
@@ -20,20 +20,20 @@ namespace IntegrationTests
 
             ExecuteAll(
                 connection,
-                DatabaseResources.CreateMailsTable,
-                DatabaseResources.CreateEmailAddressesTable,
-                DatabaseResources.DeleteEmailAddresses,
-                DatabaseResources.DeleteMails);
+                DatabaseResources.CreateMessagesTable,
+                DatabaseResources.CreateRecipientsTable,
+                DatabaseResources.DeleteRecipients,
+                DatabaseResources.DeleteMessages);
 
             InsertAll(
                 connection,
                 id,
-                DatabaseResources.InsertMails,
-                DatabaseResources.InsertEmailAddresses);
+                DatabaseResources.InsertMessages,
+                DatabaseResources.InsertRecipients);
 
             connection.Close();
         }
-        
+
         private void ExecuteAll(NpgsqlConnection connection, params string[] scripts)
         {
             foreach (var script in scripts) connection.Execute(script);
@@ -50,20 +50,22 @@ namespace IntegrationTests
             }
         }
 
-        protected void Select()
+        protected void InsertData()
         {
+            var id = Guid.Parse(DatabaseResources.Id);
             using var connection = new NpgsqlConnection(GetConnectionString());
 
             connection.Open();
-
-            ExecuteAll(
+            
+            InsertAll(
                 connection,
-                DatabaseResources.DeleteEmailAddresses,
-                DatabaseResources.DeleteMails);
+                id,
+                DatabaseResources.InsertMessages,
+                DatabaseResources.InsertRecipients);
 
             connection.Close();
         }
-
+        
         protected void DeleteAllData()
         {
             using var connection = new NpgsqlConnection(GetConnectionString());
@@ -72,30 +74,30 @@ namespace IntegrationTests
 
             ExecuteAll(
                 connection,
-                DatabaseResources.DeleteEmailAddresses,
-                DatabaseResources.DeleteMails);
-            
+                DatabaseResources.DeleteRecipients,
+                DatabaseResources.DeleteMessages);
+
             connection.Close();
         }
 
-        protected Mail GetLastMail()
+        protected Message GetLastMessage()
         {
             var id = Guid.Parse(DatabaseResources.Id);
             using var connection = new NpgsqlConnection(GetConnectionString());
             connection.Open();
-
-
+            
             var mail = connection
-                .Query($"SELECT id, subject, body, date, result, failed_message FROM mails WHERE id <> '{id}'")
-                .Select(mail => new Mail(
-                    mail.subject,
-                    mail.body,
+                .Query($"SELECT id, subject, body, date, result, failed_message FROM messages WHERE id <> '{id}'")
+                .Select(message => new Message(
+                    message.subject,
+                    message.body,
                     connection
-                        .Query($"SELECT email_address FROM email_addresses WHERE mail_id = '{mail.id}'")
+                        .Query($"SELECT email_address FROM recipients WHERE message_id = '{message.id}'")
                         .Select(i => i.email_address)
                         .Cast<string>(),
-                    DateTimeOffset.ParseExact(mail.date.ToString(), "dd.MM.yyyy H:mm:ss", null, DateTimeStyles.AllowWhiteSpaces), 
-                    new Response(mail.result, mail.failed_message))).ToArray();
+                    DateTimeOffset.ParseExact(message.date.ToString(), "dd.MM.yyyy H:mm:ss", null,
+                        DateTimeStyles.AllowWhiteSpaces),
+                    new Response(message.result, message.failed_message))).ToArray();
             connection.Close();
 
             return mail.FirstOrDefault();

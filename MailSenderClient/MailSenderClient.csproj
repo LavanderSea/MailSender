@@ -9,4 +9,19 @@
     <PackageReference Include="Npgsql" Version="4.1.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Infrastructure\SqlRepositoryResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SqlRepositoryResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Infrastructure\SqlRepositoryResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqlRepositoryResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

@@ -70,18 +70,18 @@ namespace IntegrationTests {
         ///   ]
         ///}.
         /// </summary>
-        public static string CorrectMail {
+        public static string CorrectMessage {
             get {
-                return ResourceManager.GetString("CorrectMail", resourceCulture);
+                return ResourceManager.GetString("CorrectMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Ищет локализованную строку, похожую на [{&quot;Subject&quot;:&quot;test_subject&quot;,&quot;Body&quot;:&quot;test_body&quot;,&quot;Recipients&quot;:[&quot;first@gmail.com&quot;,&quot;second@gmail.com&quot;],&quot;date&quot;:&quot;01.01.0001 3:00&quot;,&quot;Result&quot;:&quot;test_result&quot;,&quot;FailedMessage&quot;:&quot;test_message&quot;}].
         /// </summary>
-        public static string CorrectMails {
+        public static string CorrectMessages {
             get {
-                return ResourceManager.GetString("CorrectMails", resourceCulture);
+                return ResourceManager.GetString("CorrectMessages", resourceCulture);
             }
         }
         
@@ -92,9 +92,9 @@ namespace IntegrationTests {
         ///&quot;recipients&quot;: []
         ///}.
         /// </summary>
-        public static string IncorrectMail_EmptyRecipients {
+        public static string IncorrectMessage_EmptyRecipients {
             get {
-                return ResourceManager.GetString("IncorrectMail.EmptyRecipients", resourceCulture);
+                return ResourceManager.GetString("IncorrectMessage.EmptyRecipients", resourceCulture);
             }
         }
         
@@ -107,9 +107,9 @@ namespace IntegrationTests {
         ///   ]
         ///}.
         /// </summary>
-        public static string IncorrectMail_NullBody {
+        public static string IncorrectMessage_NullBody {
             get {
-                return ResourceManager.GetString("IncorrectMail.NullBody", resourceCulture);
+                return ResourceManager.GetString("IncorrectMessage.NullBody", resourceCulture);
             }
         }
         
@@ -119,9 +119,9 @@ namespace IntegrationTests {
         ///   &quot;body&quot;:&quot;Body here&quot;
         ///}.
         /// </summary>
-        public static string IncorrectMail_NullRecipients {
+        public static string IncorrectMessage_NullRecipients {
             get {
-                return ResourceManager.GetString("IncorrectMail.NullRecipients", resourceCulture);
+                return ResourceManager.GetString("IncorrectMessage.NullRecipients", resourceCulture);
             }
         }
         
@@ -134,9 +134,9 @@ namespace IntegrationTests {
         ///   ]
         ///}.
         /// </summary>
-        public static string IncorrectMail_NullSubject {
+        public static string IncorrectMessage_NullSubject {
             get {
-                return ResourceManager.GetString("IncorrectMail.NullSubject", resourceCulture);
+                return ResourceManager.GetString("IncorrectMessage.NullSubject", resourceCulture);
             }
         }
         
@@ -150,9 +150,9 @@ namespace IntegrationTests {
         ///   ]
         ///}.
         /// </summary>
-        public static string MailWithIncorrectEmailAddress {
+        public static string MessageWithIncorrectEmailAddress {
             get {
-                return ResourceManager.GetString("MailWithIncorrectEmailAddress", resourceCulture);
+                return ResourceManager.GetString("MessageWithIncorrectEmailAddress", resourceCulture);
             }
         }
     }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace IntegrationTests {
+namespace MailSenderClient.Infrastructure {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace IntegrationTests {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class DatabaseResources {
+    public class SqlRepositoryResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DatabaseResources() {
+        internal SqlRepositoryResource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace IntegrationTests {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("IntegrationTests.DatabaseResources", typeof(DatabaseResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MailSenderClient.Infrastructure.SqlRepositoryResource", typeof(SqlRepositoryResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,52 +61,8 @@ namespace IntegrationTests {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на CREATE TABLE IF NOT EXISTS messages (id uuid PRIMARY KEY,subject TEXT,body TEXT, date TIMESTAMP with time zone NOT NULL, result VARCHAR(16),failed_message TEXT);.
-        /// </summary>
-        public static string CreateMessagesTable {
-            get {
-                return ResourceManager.GetString("CreateMessagesTable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на CREATE TABLE IF NOT EXISTS recipients (message_id UUID,email_address VARCHAR(128),FOREIGN KEY(message_id) REFERENCES messages(id));.
-        /// </summary>
-        public static string CreateRecipientsTable {
-            get {
-                return ResourceManager.GetString("CreateRecipientsTable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на DELETE FROM messages;  .
-        /// </summary>
-        public static string DeleteMessages {
-            get {
-                return ResourceManager.GetString("DeleteMessages", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на DELETE FROM recipients;.
-        /// </summary>
-        public static string DeleteRecipients {
-            get {
-                return ResourceManager.GetString("DeleteRecipients", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на 8fd2f6fb-be46-4edf-9eff-dc93a993c856.
-        /// </summary>
-        public static string Id {
-            get {
-                return ResourceManager.GetString("Id", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на INSERT INTO messages(id, subject, body, date, result, failed_message)VALUES(@id, &apos;test_subject&apos;, &apos;test_body&apos;, @date, &apos;test_result&apos;, &apos;test_message&apos;);.
+        ///   Ищет локализованную строку, похожую на INSERT INTO messages(id, subject, body, date, result, failed_message) 
+        ///VALUES(@id, @subject, @body, @date, @result, @failed_message);.
         /// </summary>
         public static string InsertMessages {
             get {
@@ -115,11 +71,20 @@ namespace IntegrationTests {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на INSERT INTO recipients(message_id, email_address)	VALUES (@id, &apos;first@gmail.com&apos;), (@id, &apos;second@gmail.com&apos;);.
+        ///   Ищет локализованную строку, похожую на INSERT INTO recipients(message_id, email_address) VALUES(@id, @email_address);.
         /// </summary>
         public static string InsertRecipients {
             get {
                 return ResourceManager.GetString("InsertRecipients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT id, subject, body, date, result, failed_message FROM messages.
+        /// </summary>
+        public static string SelectAllMessages {
+            get {
+                return ResourceManager.GetString("SelectAllMessages", resourceCulture);
             }
         }
     }
